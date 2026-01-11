@@ -44,6 +44,37 @@ Loa uses a managed scaffolding architecture:
 └── resources/          # Level 3: References, templates, scripts
 ```
 
+### Claude Agent Skills Adapter (v0.11.0)
+
+Loa skills can be transformed to Claude Agent Skills format at runtime:
+
+```bash
+# List skills with compatibility status
+.claude/scripts/skills-adapter.sh list
+
+# Generate Claude Agent Skills format for a skill
+.claude/scripts/skills-adapter.sh generate discovering-requirements
+
+# Output includes YAML frontmatter + SKILL.md content:
+# ---
+# name: "discovering-requirements"
+# description: "Product Manager skill for PRD creation"
+# version: "2.0.0"
+# triggers:
+#   - "/plan-and-analyze"
+#   - "create prd"
+# ---
+# [Original SKILL.md content follows]
+```
+
+**Configuration** (`.loa.config.yaml`):
+```yaml
+agent_skills:
+  enabled: true           # Enable/disable skills adapter
+  load_mode: "dynamic"    # "dynamic" (on-demand) or "eager" (startup)
+  api_upload: false       # Enable API upload features (future)
+```
+
 ### Command Architecture (v4)
 
 Commands in `.claude/commands/` use thin routing layer with YAML frontmatter:
@@ -291,8 +322,163 @@ Use `.claude/scripts/context-check.sh` for assessment.
 ├── validate-mcp.sh           # MCP configuration validation
 ├── constructs-loader.sh      # Loa Constructs skill loader
 ├── constructs-lib.sh         # Loa Constructs shared utilities
-└── license-validator.sh      # JWT license validation
+├── license-validator.sh      # JWT license validation
+├── skills-adapter.sh         # Claude Agent Skills format generator (v0.11.0)
+├── schema-validator.sh       # JSON Schema validation for outputs (v0.11.0)
+├── thinking-logger.sh        # Extended thinking trajectory logger (v0.11.0)
+├── tool-search-adapter.sh    # MCP tool search and discovery (v0.11.0)
+├── context-manager.sh        # Context compaction and preservation (v0.11.0)
+└── context-benchmark.sh      # Context performance benchmarks (v0.11.0)
 ```
+
+### Context Manager (v0.11.0)
+
+Manages context compaction with preservation rules:
+
+```bash
+# Check context status
+.claude/scripts/context-manager.sh status
+
+# Check status as JSON
+.claude/scripts/context-manager.sh status --json
+
+# View preservation rules
+.claude/scripts/context-manager.sh rules
+
+# Run pre-compaction check
+.claude/scripts/context-manager.sh compact --dry-run
+
+# Run simplified checkpoint (3 manual steps)
+.claude/scripts/context-manager.sh checkpoint
+
+# Recover context at different levels
+.claude/scripts/context-manager.sh recover 1  # Minimal (~100 tokens)
+.claude/scripts/context-manager.sh recover 2  # Standard (~500 tokens)
+.claude/scripts/context-manager.sh recover 3  # Full (~2000 tokens)
+```
+
+**Preservation Rules** (configurable in `.loa.config.yaml`):
+
+| Item | Status | Rationale |
+|------|--------|-----------|
+| NOTES.md Session Continuity | PRESERVED | Recovery anchor |
+| NOTES.md Decision Log | PRESERVED | Audit trail |
+| Trajectory entries | PRESERVED | External files |
+| Active bead references | PRESERVED | Task continuity |
+| Tool results | COMPACTABLE | Summarized after use |
+| Thinking blocks | COMPACTABLE | Logged to trajectory |
+
+**Simplified Checkpoint** (7 steps → 3 manual):
+1. Verify Decision Log updated
+2. Verify Bead updated
+3. Verify EDD test scenarios
+
+Protocol: `.claude/protocols/context-compaction.md`
+
+### Context Benchmark (v0.11.0)
+
+Measure context management performance:
+
+```bash
+# Run benchmark
+.claude/scripts/context-benchmark.sh run
+
+# Set baseline
+.claude/scripts/context-benchmark.sh baseline
+
+# Compare against baseline
+.claude/scripts/context-benchmark.sh compare
+
+# View benchmark history
+.claude/scripts/context-benchmark.sh history
+
+# JSON output
+.claude/scripts/context-benchmark.sh run --json
+.claude/scripts/context-benchmark.sh run --save  # Save to analytics
+```
+
+**Target Metrics (v0.11.0)**:
+- Token reduction: -15%
+- Checkpoint steps: 3 (was 7)
+- Recovery success: 100%
+
+### Schema Validator (v0.11.0)
+
+Validates agent outputs against JSON schemas:
+
+```bash
+# Validate a file (auto-detects schema based on path)
+.claude/scripts/schema-validator.sh validate loa-grimoire/prd.md
+
+# List available schemas
+.claude/scripts/schema-validator.sh list
+
+# Override schema detection
+.claude/scripts/schema-validator.sh validate output.json --schema prd
+
+# Validation modes
+.claude/scripts/schema-validator.sh validate file.md --mode strict   # Fail on errors
+.claude/scripts/schema-validator.sh validate file.md --mode warn     # Warn only (default)
+.claude/scripts/schema-validator.sh validate file.md --mode disabled # Skip validation
+
+# JSON output for automation
+.claude/scripts/schema-validator.sh validate file.md --json
+```
+
+**Auto-Detection Rules**:
+| Pattern | Schema |
+|---------|--------|
+| `**/prd.md`, `**/*-prd.md` | `prd.schema.json` |
+| `**/sdd.md`, `**/*-sdd.md` | `sdd.schema.json` |
+| `**/sprint.md`, `**/*-sprint.md` | `sprint.schema.json` |
+| `**/trajectory/*.jsonl` | `trajectory-entry.schema.json` |
+
+### Thinking Logger (v0.12.0)
+
+Logs agent reasoning with extended thinking support:
+
+```bash
+# Log a simple entry
+.claude/scripts/thinking-logger.sh log \
+  --agent implementing-tasks \
+  --action "Created user model" \
+  --phase implementation
+
+# Log with extended thinking
+.claude/scripts/thinking-logger.sh log \
+  --agent designing-architecture \
+  --action "Evaluated patterns" \
+  --thinking \
+  --think-step "1:analysis:Consider microservices vs monolith" \
+  --think-step "2:evaluation:Microservices adds complexity" \
+  --think-step "3:decision:Chose modular monolith"
+
+# Log with grounding citations
+.claude/scripts/thinking-logger.sh log \
+  --agent reviewing-code \
+  --action "Found SQL injection" \
+  --grounding code_reference \
+  --ref "src/db.ts:45-50" \
+  --confidence 0.95
+
+# Read trajectory entries
+.claude/scripts/thinking-logger.sh read loa-grimoire/a2a/trajectory/implementing-tasks-2025-01-11.jsonl --last 5
+
+# Initialize trajectory directory
+.claude/scripts/thinking-logger.sh init
+```
+
+**Thinking Step Format**: `step:type:thought`
+- step: Integer (1, 2, 3...)
+- type: analysis, hypothesis, evaluation, decision, reflection
+- thought: Free-text description
+
+**Grounding Types**:
+- `citation`: Reference to documentation
+- `code_reference`: Reference to source code
+- `assumption`: Unverified claim (flagged)
+- `user_input`: Based on user request
+- `inference`: Derived from other facts
 
 ## Integrations
 
@@ -440,8 +626,14 @@ registry:
   - `synthesis-checkpoint.md` - Pre-clear validation
   - `jit-retrieval.md` - Lightweight identifiers
   - `attention-budget.md` - Token thresholds
+  - **v0.11.0 Claude Platform Integration**:
+  - `context-compaction.md` - Compaction preservation rules
 - `.claude/scripts/` - Helper bash scripts
   - **v0.9.0 Scripts**:
   - `grounding-check.sh` - Grounding ratio calculation
   - `synthesis-checkpoint.sh` - Pre-clear validation
   - `self-heal-state.sh` - State Zone recovery
+  - **v0.11.0 Claude Platform Integration**:
+  - `context-manager.sh` - Context compaction and preservation
+  - `context-benchmark.sh` - Performance benchmarking
+  - `tool-search-adapter.sh` - MCP tool discovery
