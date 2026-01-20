@@ -5,6 +5,33 @@ All notable changes to Loa will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.1] - 2026-01-20 — Gitignore Hardening
+
+### Why This Release
+
+Security and hygiene improvements to ensure sensitive files and project-specific state are never accidentally committed.
+
+### Added
+
+- **Simstim `.gitignore`** — Protects user-specific configuration
+  - `simstim.toml` (contains Telegram chat IDs)
+  - Audit logs and Python artifacts
+
+- **Enhanced Beads exclusions** — Runtime files now properly ignored
+  - `daemon.lock` (process lock)
+  - `.local_version` (local br version)
+  - `beads.db` (SQLite database)
+  - `*.meta.json` (sync metadata)
+  - `*.jsonl` (task graph - template repo only)
+
+- **Archive exclusion** — `grimoires/loa/archive/` now ignored
+  - Project-specific development cycle history
+  - Prevents template pollution
+
+### Security
+
+All user-specific and runtime files are now protected from accidental commits.
+
 ## [1.3.0] - 2026-01-20 — Simstim Telegram Bridge
 
 ### Why This Release
