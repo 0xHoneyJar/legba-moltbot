@@ -45,3 +45,18 @@ bash /root/clawd/.secrets/setup.sh
 ```
 
 This restores `~/.git-credentials` and exports `GITHUB_TOKEN`.
+
+## Research Tools
+
+**Brave Search:** Enabled via BRAVE_API_KEY
+
+On session start, run:
+```bash
+source /root/clawd/.secrets/setup.sh
+```
+
+Then use scout.sh:
+```bash
+./research/scout.sh brave "query"
+./research/scout.sh all "topic"
+```
