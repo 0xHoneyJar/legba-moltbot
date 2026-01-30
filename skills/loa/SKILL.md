@@ -112,4 +112,4 @@ claude
 ## Environment
 
 Claude Code requires `ANTHROPIC_API_KEY` which is already configured in this container.
-# Force rebuild Fri 30 Jan 2026 17:50:08 AEDT
+# Updated Thu 30 Jan 2026 - v1.10.0 (Compound Learning)
