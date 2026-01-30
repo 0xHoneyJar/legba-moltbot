@@ -1,5 +1,36 @@
 {
   "lastChecked": {},
+  "apiKeys": {
+    "brave": "✅ BRAVE_API_KEY configured in moltbot-sandbox"
+  },
+  "sources": {
+    "arxiv": {
+      "enabled": true,
+      "categories": ["cs.AI", "cs.MA", "cs.LG", "cs.CL"],
+      "notes": "Direct API access, no key required"
+    },
+    "hn": {
+      "enabled": true,
+      "notes": "Firebase API, no key required"
+    },
+    "brave": {
+      "enabled": true,
+      "requires": "BRAVE_API_KEY",
+      "notes": "Universal search - can search any site"
+    },
+    "pwc": {
+      "enabled": true,
+      "notes": "Papers With Code - via Brave site: search"
+    },
+    "github": {
+      "enabled": true,
+      "notes": "Trending repos, via gh CLI or Brave"
+    },
+    "semantic": {
+      "enabled": true,
+      "notes": "Semantic Scholar - via Brave site: search"
+    }
+  },
   "interests": [
     "agentic workflows",
     "chain of thought",
@@ -9,6 +40,15 @@
     "reasoning improvements",
     "prompt engineering",
     "agent memory",
-    "reflection patterns"
-  ]
+    "reflection patterns",
+    "reward modeling",
+    "trajectory evaluation",
+    "world modeling",
+    "state prediction"
+  ],
+  "experimentTracking": {
+    "branchPrefix": "experiment/",
+    "targetRepo": "0xHoneyJar/loa",
+    "workflow": "scout → evaluate → branch → implement → PR"
+  }
 }
