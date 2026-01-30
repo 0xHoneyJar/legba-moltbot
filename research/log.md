@@ -68,3 +68,37 @@ Research capability initialized. Ready to scout sources and experiment.
 - [ ] `experiment/llm-judge-auditor` - Structured rubrics for Auditor
 - [ ] `experiment/reflection-loops` - Iterative self-correction in Sprint
 - [ ] `experiment/a2a-handoffs` - AgentCard protocol for agent communication
+
+## Clawdbot Architecture Deep Dive (Hesam @Hesamation)
+
+**Source**: Twitter thread, 2026-01-30
+
+### Key Architecture Components
+
+1. **Gateway Server** - Lane-based command queue
+   - Serial by default, explicit parallel
+   - "What's safe to parallelize?" > "What do I need to lock?"
+
+2. **Agent Runner** - Dynamic prompt assembly
+   - Tools + skills + memory + history → context window guard → LLM call
+
+3. **Agentic Loop** - Tool calls until final text or ~20 turns
+
+4. **Memory System**
+   - Session: JSONL transcripts
+   - Long-term: Markdown files (MEMORY.md, memory/)
+   - Search: Hybrid vector (SQLite) + keyword (FTS5)
+   - No forgetting curve — old memories equal weight
+   - No special API — agent uses `write` tool
+
+5. **Browser** - Semantic snapshots (ARIA tree)
+   - 5MB screenshot → <50KB text
+   - 100x token efficiency
+   - Browsing is structural, not visual
+
+### Improvement Opportunities
+
+- [ ] Memory decay / relevance scoring
+- [ ] Tool result clearing (from loa Auditor)
+- [ ] Smarter compaction (semantic chunking)
+- [ ] Lane priority for time-sensitive ops
