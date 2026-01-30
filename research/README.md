@@ -84,3 +84,26 @@ Legba's space for exploring cutting-edge agentic engineering and experimenting w
 ## API Keys
 
 - **BRAVE_API_KEY**: ✅ Configured in moltbot-sandbox worker
+
+## PR Strategy
+
+**One experiment = One PR**
+
+Branch naming: `experiment/<topic>-<source>`
+Example: `experiment/agent-rrm-critique`
+
+### PR Template
+
+```markdown
+## Research Source
+Paper: [title](link)
+Key insight: <one line>
+
+## What this adds to loa
+- <concrete change>
+
+## Testing
+- <how I validated it>
+```
+
+Each PR traces back to its research source. Independent review/merge.
