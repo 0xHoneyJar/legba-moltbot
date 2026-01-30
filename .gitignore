@@ -1,1 +1,16 @@
 .secrets/
+
+# Security - never commit these
+*.pem
+*.key
+*credentials*
+*secrets*
+.env
+.env.*
+*.secret
+*_token
+*_key
+*.log
+
+# Memory that might contain sensitive info
+memory/heartbeat-state.json
