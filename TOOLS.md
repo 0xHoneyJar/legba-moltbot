@@ -34,3 +34,14 @@ Skills are shared. Your setup is yours. Keeping them apart means you can update 
 ---
 
 Add whatever helps you do your job. This is your cheat sheet.
+
+## GitHub Access
+
+Token stored in `.secrets/github_token` (gitignored).
+
+**On session start, run:**
+```bash
+bash /root/clawd/.secrets/setup.sh
+```
+
+This restores `~/.git-credentials` and exports `GITHUB_TOKEN`.
